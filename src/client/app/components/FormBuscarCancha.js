@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Row, Col, Input, Button, NavItem } from 'react-materialize';
+import axios from 'axios';
 
 class FormBuscarCancha extends Component {
 	constructor(props) {
@@ -19,12 +20,12 @@ class FormBuscarCancha extends Component {
 		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
-	componentDidMount() {
+	/*componentDidMount() {
 		$('.datepicker').pickadate({
       formatSubmit: 'yyyy/mm/dd',
       hiddenName:true
 		});
-	}
+	}*/
 
 	handleTipoCancha(event) {
 		this.setState({ tipoCancha: event.target.value });
@@ -39,7 +40,6 @@ class FormBuscarCancha extends Component {
 	}
 
 	handleFechaDesde(event) {
-		console.log(event.target.value);
 		this.setState({ fechaDesde: event.target.value });
 	}
 
@@ -47,11 +47,24 @@ class FormBuscarCancha extends Component {
 		this.setState({ fechaHasta: event.target.value });
 	}
 
-	handleSubmit(event) {
-		alert(this.state.fechaDesde);
-		event.preventDefault();
+	buildParametersString() {
+		let getParameters = 'tipoCancha=' + this.state.tipoCancha;
+		getParameters += this.state.fechaDesde !== '' ? '&fechaDesde=' + this.state.fechaDesde : '';
+		getParameters += this.state.fechaHasta !== '' ? '&fechaHasta=' + this.state.fechaHasta : '';
+		getParameters += this.state.horaDesde !== '' ? '&horaDesde=' + this.state.horaDesde : '';
+		getParameters += this.state.horaHasta !== '' ? '&horaHasta=' + this.state.horaHasta : '';
+
+		return getParameters;
 	}
-  
+
+	handleSubmit(event) {
+		const parameters = this.buildParametersString();
+
+		axios.get('/getReservas?' + parameters)
+					.then((data) => console.log(data.data))
+					.catch((err) => console.log(err));
+	}
+
 	render() {
 		return (
 			<div>
