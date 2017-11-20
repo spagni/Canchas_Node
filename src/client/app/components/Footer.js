@@ -5,6 +5,7 @@ class FooterPage extends Component {
   render() {
     return(
       <Footer>
+        <p>Sebastian Pagni - Leonel Rapagnani</p>
       </Footer>
     );
   }

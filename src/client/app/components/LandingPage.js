@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { Parallax } from 'react-materialize';
+import FormPage from './FormPage';
 
 class LandingPage extends Component {
   render() {
     return(
       <div>
         <Parallax imageSrc="../../images/pelotaCancha.jpg" />
-        <h1>Meta Buscador de Canchas de futbol</h1>
+        <FormPage />
       </div>
     );
   }

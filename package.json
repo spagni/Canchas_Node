@@ -19,8 +19,8 @@
     "babel-preset-react": "^6.24.1",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "react": "15.6.1",
+    "react-dom": "15.6.1",
     "react-materialize": "^1.0.18",
     "webpack": "^3.8.1"
   }
