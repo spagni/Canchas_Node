@@ -58,11 +58,17 @@ class FormBuscarCancha extends Component {
 	}
 
 	handleSubmit(event) {
-		const parameters = this.buildParametersString();
+		//const parameters = this.buildParametersString();
+		
+		axios.post('/getReservas', this.state)
+				.then((data) => console.log('POST' + data.data))
+				.catch((err) => console.log(err));
 
-		axios.get('/getReservas?' + parameters)
-					.then((data) => console.log(data.data))
-					.catch((err) => console.log(err));
+		/*axios.get('/getReservas', {
+			params: this.state
+		})
+			.then((data) => console.log(data.data))
+			.catch((err) => console.log(err));*/
 	}
 
 	render() {
