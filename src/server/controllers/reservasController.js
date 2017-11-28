@@ -1,23 +1,24 @@
 const axios = require('axios');
 const constants = require('../constants/constants');
+let params = '';
 
 function callServer(server){
-	return axios.get(server).then((resp)=>Promise.resolve(resp.data))
+	server += params;
+	return axios.get(server).then((resp)=>Promise.resolve(resp.data)).catch((err) => console.log(err));
 }
 
 module.exports.getReservas = function(req, res) {
 	Promise.all(constants.serverUri.map(callServer))
 		.then((data) => {
-		   //res.json([].concat.apply([], data);
-		   res.json(data);
+		   res.json(concatAll(data));
 		})
 		.catch((err) => console.log(err));
 };
 
 
 module.exports.getReservasPost = function(req, res) {
-	console.log(req.body);
-	
+	params = buildParametersString(req.body);
+
 	Promise.all(constants.serverUri.map(callServer))
 		.then((data) => {
 		   res.json(concatAll(data));
@@ -35,4 +36,14 @@ function concatAll(arr) {
 	});
 
 	return results;
+}
+
+function buildParametersString(params) {
+	let getParameters = '?tipoCancha=' + params.tipoCancha;
+	getParameters += params.fechaDesde !== '' ? '&fechaDesde=' + params.fechaDesde : '';
+	getParameters += params.fechaHasta !== '' ? '&fechaHasta=' + params.fechaHasta : '';
+	getParameters += params.horaDesde !== '' ? '&horaDesde=' + params.horaDesde : '';
+	getParameters += params.horaHasta !== '' ? '&horaHasta=' + params.horaHasta : '';
+
+	return getParameters;
 }
