@@ -8,7 +8,7 @@ class FormPage extends Component {
 		return (
 			<Row>
 				<Col s={6}>
-          			<FormBuscarCancha />
+          <FormBuscarCancha />
 				</Col>
 				<Col s={6}>
 					<ListReservas />

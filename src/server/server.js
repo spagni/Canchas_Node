@@ -8,6 +8,7 @@ const app = express();
 const baseFolder = path.resolve(__dirname, '../client/')
 
 app.use("/",express.static(baseFolder))
+app.use("/reservas",express.static(baseFolder))
 
 app.use(bodyParser.json());
 
