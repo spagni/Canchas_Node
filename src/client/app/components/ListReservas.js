@@ -10,10 +10,11 @@ class ListReservas extends Component {
 			reservas: [],
 			reservasPaginadas: [],
 			currentPage: 1,
-			totalRes: 0,
+			totalRes: 0
 		};
 		this.paginate = this.paginate.bind(this);
 		this.loadPaginationItems = this.loadPaginationItems.bind(this);
+		this.buscarProximasReservas = this.buscarProximasReservas.bind(this);
 	}
 
 	componentWillMount() {
@@ -30,7 +31,11 @@ class ListReservas extends Component {
 				.get('/getReservas')
 				.then(data => {
 					//Guardo las reservas en mi estado
-					this.setState({ reservas: data.data, reservasPaginadas: this.paginate(data.data,5,1), totalRes: data.data.length/5 });
+					this.setState({
+						reservas: data.data,
+						reservasPaginadas: this.paginate(data.data, 5, 1),
+						totalRes: data.data.length / 5
+					});
 				})
 				.catch(err => console.log(err));
 		}
@@ -60,8 +65,7 @@ class ListReservas extends Component {
 		let arrReservas = [];
 		if (this.props.full === 'false') {
 			arrReservas = this.state.reservasPaginadas;
-		}
-		else {
+		} else {
 			arrReservas = this.state.reservas;
 		}
 		return arrReservas.map(res => {
@@ -81,7 +85,7 @@ class ListReservas extends Component {
 							node="a"
 							onClick={() => this.handleSubmit(res, precio)}
 						>
-							Reservar
+							Ir
 						</Button>
 					</td>
 				</tr>
@@ -113,9 +117,9 @@ class ListReservas extends Component {
 
 	showPagination() {
 		if (this.props.full === 'false') {
-			return(
+			return (
 				<Pagination
-					items={3}
+					items={this.state.reservas.lenght/5}
 					activePage={this.state.currentPage}
 					maxButtons={3}
 					onSelect={this.loadPaginationItems}
@@ -125,13 +129,33 @@ class ListReservas extends Component {
 	}
 
 	loadPaginationItems(page) {
-		const reservasPage = this.paginate(this.state.reservas,5,page);
-		this.setState({reservasPaginadas: reservasPage}, () => this.renderTabla());
+		const reservasPage = this.paginate(this.state.reservas, 5, page);
+		this.setState({ reservasPaginadas: reservasPage }
+		);
 	}
 
 	paginate(array, page_size, page_number) {
+		let newArr = this.buscarProximasReservas(array);
 		--page_number; // because pages logically start with 1, but technically with 0
-		return array.slice(page_number * page_size, (page_number + 1) * page_size);
+		return newArr.slice(page_number * page_size, (page_number + 1) * page_size);
+	}
+
+	buscarProximasReservas(array) {
+		let today = new Date();
+		let dd = today.getDate();
+		let mm = today.getMonth() + 1;
+		let yyyy = today.getFullYear();
+		let hour = today.getHours();
+		if (dd < 10) {
+			dd = '0' + dd;
+		}
+		if (mm < 10) {
+			mm = '0' + mm;
+		}
+		today = yyyy + '-' + mm + '-' + dd;
+		return array.filter((item) => {
+			return (item.Fecha === today && item.Horario > hour && item.Horario < hour+4);
+		});
 	}
 	//Component reutilizable para la landing y para full reservas
 	//Que reciba por props un titulo para la pagina, un bool si es full o no y un list de parametros/ o de reservas
