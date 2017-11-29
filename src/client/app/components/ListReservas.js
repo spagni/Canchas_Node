@@ -23,6 +23,25 @@ class ListReservas extends Component {
 		}
 	}
 
+	handleSubmit(res,precio) {
+		const newReserva = {
+			nombre: res.Nombre,
+			tamanio: res.Tamanio,
+			fecha: res.Fecha,
+			horario: res.Horario,
+			precio: precio,
+			web: res.Web,
+			link: res.Link
+		};
+
+		axios
+			.post('/postReserva', newReserva)
+			.then(data => {
+				console.log(data);
+			})
+			.catch(err => console.log(err));
+	}
+
   renderTabla() {
     return (this.state.reservas.map(res => {
       const precio = this.calcularPrecio(res);
@@ -36,7 +55,7 @@ class ListReservas extends Component {
           <td>${precio}</td>
           <td>{res.Web}</td>
           <td>
-            <Button waves="light" node='a' href={res.Link}>
+            <Button waves="light" node='a' onClick={() => this.handleSubmit(res, precio)} >
               Reservar
             </Button>
           </td>

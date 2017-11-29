@@ -5,4 +5,6 @@ module.exports = function(app) {
 	app.get('/getReservas', reservasCtrl.getReservas);
 
 	app.post('/getReservas', reservasCtrl.getReservasPost);
+
+	app.post('/postReserva', reservasCtrl.saveReserva);
 }

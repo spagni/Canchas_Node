@@ -1,7 +1,12 @@
 'use strict'
 const path = require("path")
+const mongoose = require("mongoose");
 const express = require('express');
 const bodyParser = require('body-parser');
+const constants = require('./constants/constants');
+require('./models/reserva');
+
+mongoose.connect(constants.mongoURI);
 
 const app = express();
 
