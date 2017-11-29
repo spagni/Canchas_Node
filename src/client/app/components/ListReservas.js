@@ -9,6 +9,7 @@ class ListReservas extends Component {
 			params: this.props.params,
 			reservas: [],
 			reservasPaginadas: [],
+			reservasProximas: [],
 			currentPage: 1,
 			totalRes: 0
 		};
@@ -30,11 +31,14 @@ class ListReservas extends Component {
 			axios
 				.get('/getReservas')
 				.then(data => {
+					//busco las reservas mas cercanas
+					let arrProximas = this.buscarProximasReservas(data.data);
 					//Guardo las reservas en mi estado
 					this.setState({
 						reservas: data.data,
-						reservasPaginadas: this.paginate(data.data, 5, 1),
-						totalRes: data.data.length / 5
+						reservasProximas: arrProximas,
+						reservasPaginadas: this.paginate(arrProximas, 5, 1),
+						totalRes: arrProximas.length
 					});
 				})
 				.catch(err => console.log(err));
@@ -119,7 +123,7 @@ class ListReservas extends Component {
 		if (this.props.full === 'false') {
 			return (
 				<Pagination
-					items={this.state.reservas.lenght/5}
+					items={this.state.totalRes/5 + 1}
 					activePage={this.state.currentPage}
 					maxButtons={3}
 					onSelect={this.loadPaginationItems}
@@ -129,15 +133,14 @@ class ListReservas extends Component {
 	}
 
 	loadPaginationItems(page) {
-		const reservasPage = this.paginate(this.state.reservas, 5, page);
+		const reservasPage = this.paginate(this.state.reservasProximas, 5, page);
 		this.setState({ reservasPaginadas: reservasPage }
 		);
 	}
 
 	paginate(array, page_size, page_number) {
-		let newArr = this.buscarProximasReservas(array);
-		--page_number; // because pages logically start with 1, but technically with 0
-		return newArr.slice(page_number * page_size, (page_number + 1) * page_size);
+		--page_number; // hay que empezar desde 0, pero las paginas empiezan desde 1
+		return array.slice(page_number * page_size, (page_number + 1) * page_size);
 	}
 
 	buscarProximasReservas(array) {
@@ -154,12 +157,10 @@ class ListReservas extends Component {
 		}
 		today = yyyy + '-' + mm + '-' + dd;
 		return array.filter((item) => {
-			return (item.Fecha === today && item.Horario > hour && item.Horario < hour+4);
+			return (item.Fecha === today && item.Horario > hour && item.Horario < hour+5);
 		});
 	}
-	//Component reutilizable para la landing y para full reservas
-	//Que reciba por props un titulo para la pagina, un bool si es full o no y un list de parametros/ o de reservas
-	//componentDidMount busca un top 5 de proximas reservas
+
 	render() {
 		return (
 			<div>
