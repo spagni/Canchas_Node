@@ -38,6 +38,7 @@ class ListReservas extends Component {
 			.post('/postReserva', newReserva)
 			.then(data => {
 				console.log(data);
+				window.open(newReserva.link, '_blank');
 			})
 			.catch(err => console.log(err));
 	}
