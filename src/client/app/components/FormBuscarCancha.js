@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Row, Col, Input, Button, NavItem } from 'react-materialize';
-import axios from 'axios';
 
 class FormBuscarCancha extends Component {
 	constructor(props) {
@@ -59,10 +58,8 @@ class FormBuscarCancha extends Component {
 
 	handleSubmit() {
 		//const parameters = this.buildParametersString();
-		
-		axios.post('/getReservas', this.state)
-				.then((data) => console.log('POST' + data.data))
-				.catch((err) => console.log(err));
+
+		this.props.onSubmitted(this.state);
 	}
 
 	render() {

@@ -7,6 +7,16 @@ import FooterPage from './components/Footer';
 import ListReservas from './components/ListReservas';
 
 class App extends Component {
+  constructor(props) {
+		super(props);
+		this.state = {
+			location : {
+				state: {
+					sebi: ''
+				}
+			}
+		};
+	}
   render() {
     return (
       <div>
