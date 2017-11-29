@@ -27,7 +27,7 @@ class FormPage extends Component {
 	          <FormBuscarCancha onSubmitted={this.onSubmittedForm.bind(this)}/>
 					</Col>
 					<Col s={6}>
-						<ListReservas />
+						<ListReservas full="false"/>
 					</Col>
 				</Row>
 			);

@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Table, Button } from 'react-materialize';
+import { Table, Button, Pagination } from 'react-materialize';
 
 class ListReservas extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			params: this.props.params,
-			reservas: []
+			reservas: [],
+			reservasPaginadas: [],
+			currentPage: 1,
+			totalRes: 0,
 		};
+		this.paginate = this.paginate.bind(this);
+		this.loadPaginationItems = this.loadPaginationItems.bind(this);
 	}
 
 	componentWillMount() {
@@ -20,10 +25,18 @@ class ListReservas extends Component {
 					this.setState({ reservas: data.data });
 				})
 				.catch(err => console.log(err));
+		} else {
+			axios
+				.get('/getReservas')
+				.then(data => {
+					//Guardo las reservas en mi estado
+					this.setState({ reservas: data.data, reservasPaginadas: this.paginate(data.data,5,1), totalRes: data.data.length/5 });
+				})
+				.catch(err => console.log(err));
 		}
 	}
 
-	handleSubmit(res,precio) {
+	handleSubmit(res, precio) {
 		const newReserva = {
 			nombre: res.Nombre,
 			tamanio: res.Tamanio,
@@ -43,50 +56,83 @@ class ListReservas extends Component {
 			.catch(err => console.log(err));
 	}
 
-  renderTabla() {
-    return (this.state.reservas.map(res => {
-      const precio = this.calcularPrecio(res);
-      const cancha = this.tipoCancha(res);
-      return(
-        <tr key={res.Link}>
-          <td>{res.Nombre}</td>
-          <td>{cancha}</td>
-          <td>{res.Fecha}</td>
-          <td>{res.Horario}</td>
-          <td>${precio}</td>
-          <td>{res.Web}</td>
-          <td>
-            <Button waves="light" node='a' onClick={() => this.handleSubmit(res, precio)} >
-              Reservar
-            </Button>
-          </td>
-        </tr>
-      );
-    }));
-  }
+	renderTabla() {
+		let arrReservas = [];
+		if (this.props.full === 'false') {
+			arrReservas = this.state.reservasPaginadas;
+		}
+		else {
+			arrReservas = this.state.reservas;
+		}
+		return arrReservas.map(res => {
+			const precio = this.calcularPrecio(res);
+			const cancha = this.tipoCancha(res);
+			return (
+				<tr key={res.Link}>
+					<td>{res.Nombre}</td>
+					<td>{cancha}</td>
+					<td>{res.Fecha}</td>
+					<td>{res.Horario}</td>
+					<td>${precio}</td>
+					<td>{res.Web}</td>
+					<td>
+						<Button
+							waves="light"
+							node="a"
+							onClick={() => this.handleSubmit(res, precio)}
+						>
+							Reservar
+						</Button>
+					</td>
+				</tr>
+			);
+		});
+	}
 
-  tipoCancha(reserva) {
-    switch (reserva.Tamanio) {
-      case 'cancha_5':
-        return 'Cancha 5'
-        break;
-      case 'cancha_7':
-        return 'Cancha 7'
-        break;
-      case 'cancha_9':
-        return 'Cancha 9'
-        break;
-    }
-  }
+	tipoCancha(reserva) {
+		switch (reserva.Tamanio) {
+			case 'cancha_5':
+				return 'Cancha 5';
+				break;
+			case 'cancha_7':
+				return 'Cancha 7';
+				break;
+			case 'cancha_9':
+				return 'Cancha 9';
+				break;
+		}
+	}
 
-  calcularPrecio(reserva) {
-    if (reserva.Horario < 19) {
-      return reserva.Precio_Dia;
-    }
-    else {
-      return reserva.Precio_Noche;
-    }
-  }
+	calcularPrecio(reserva) {
+		if (reserva.Horario < 19) {
+			return reserva.Precio_Dia;
+		} else {
+			return reserva.Precio_Noche;
+		}
+	}
+
+	showPagination() {
+		if (this.props.full === 'false') {
+			return(
+				<Pagination
+					items={3}
+					activePage={this.state.currentPage}
+					maxButtons={3}
+					onSelect={this.loadPaginationItems}
+				/>
+			);
+		}
+	}
+
+	loadPaginationItems(page) {
+		const reservasPage = this.paginate(this.state.reservas,5,page);
+		this.setState({reservasPaginadas: reservasPage}, () => this.renderTabla());
+	}
+
+	paginate(array, page_size, page_number) {
+		--page_number; // because pages logically start with 1, but technically with 0
+		return array.slice(page_number * page_size, (page_number + 1) * page_size);
+	}
 	//Component reutilizable para la landing y para full reservas
 	//Que reciba por props un titulo para la pagina, un bool si es full o no y un list de parametros/ o de reservas
 	//componentDidMount busca un top 5 de proximas reservas
@@ -98,18 +144,17 @@ class ListReservas extends Component {
 					<thead>
 						<tr>
 							<th data-field="nombre">Nombre</th>
-              <th data-field="tamanio">Tamaño</th>
+							<th data-field="tamanio">Tamaño</th>
 							<th data-field="fecha">Fecha</th>
 							<th data-field="horario">Horario</th>
-              <th data-field="precio">Precio</th>
-              <th data-field="web">Web</th>
-              <th data-field="reservar">Resevar</th>
+							<th data-field="precio">Precio</th>
+							<th data-field="web">Web</th>
+							<th data-field="reservar">Resevar</th>
 						</tr>
 					</thead>
-          <tbody>
-            {this.renderTabla()}
-          </tbody>
+					<tbody>{this.renderTabla()}</tbody>
 				</Table>
+				{this.showPagination()}
 			</div>
 		);
 	}
