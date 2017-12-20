@@ -24,13 +24,14 @@ class ListReservas extends Component {
 				.post('/reservas', this.state.params)
 				.then(data => {
 					//Guardo las reservas en mi estado
-					this.setState({ reservas: data.data });
+					this.setState({ reservas: data.data, params: {} });
 				})
 				.catch(err => console.log(err));
 		} else {
 			axios
 				.get('/reservasDisponibles')
 				.then(data => {
+					console.log(data.data);
 					//busco las reservas mas cercanas
 					let arrProximas = this.buscarProximasReservas(data.data);
 					//Guardo las reservas en mi estado
@@ -144,7 +145,7 @@ class ListReservas extends Component {
 		if (this.props.full === 'false') {
 			return (
 				<Pagination
-					items={this.state.totalRes/5 + 1}
+					items={Math.round(this.state.totalRes/5)}
 					activePage={this.state.currentPage}
 					maxButtons={3}
 					onSelect={this.loadPaginationItems}
