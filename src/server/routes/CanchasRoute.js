@@ -2,9 +2,11 @@ const reservasCtrl = require('../controllers/reservasController');
 
 module.exports = function(app) {
 
-	app.get('/getReservas', reservasCtrl.getReservas);
+	app.get('/reservasDisponibles', reservasCtrl.getReservas);
 
-	app.post('/getReservas', reservasCtrl.getReservasPost);
+	app.post('/reservas', reservasCtrl.getReservasPost);
 
-	app.post('/postReserva', reservasCtrl.saveReserva);
+	app.post('/reserva', reservasCtrl.saveReserva);
+
+	app.get('/estadisticas', reservasCtrl.getStats);
 }

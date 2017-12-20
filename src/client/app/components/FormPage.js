@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Row, Col } from 'react-materialize';
+import { Row, Col, Tabs, Tab } from 'react-materialize';
 import FormBuscarCancha from './FormBuscarCancha';
 import ListReservas from './ListReservas';
+import StatsComponent from './StatsComponent';
 
 class FormPage extends Component {
 	constructor() {
@@ -27,7 +28,10 @@ class FormPage extends Component {
 	          <FormBuscarCancha onSubmitted={this.onSubmittedForm.bind(this)}/>
 					</Col>
 					<Col s={6}>
-						<ListReservas full="false"/>
+						<Tabs>
+							<Tab title="Estadísticas" active><StatsComponent /></Tab>
+							<Tab title="Próximas"><ListReservas full="false"/></Tab>
+						</Tabs>
 					</Col>
 				</Row>
 			);

@@ -21,7 +21,7 @@ class ListReservas extends Component {
 	componentWillMount() {
 		if (this.state.params) {
 			axios
-				.post('/getReservas', this.state.params)
+				.post('/reservas', this.state.params)
 				.then(data => {
 					//Guardo las reservas en mi estado
 					this.setState({ reservas: data.data });
@@ -29,7 +29,7 @@ class ListReservas extends Component {
 				.catch(err => console.log(err));
 		} else {
 			axios
-				.get('/getReservas')
+				.get('/reservasDisponibles')
 				.then(data => {
 					//busco las reservas mas cercanas
 					let arrProximas = this.buscarProximasReservas(data.data);
@@ -57,7 +57,7 @@ class ListReservas extends Component {
 		};
 
 		axios
-			.post('/postReserva', newReserva)
+			.post('/reserva', newReserva)
 			.then(data => {
 				console.log(data);
 				window.open(newReserva.link, '_blank');
@@ -72,7 +72,9 @@ class ListReservas extends Component {
 		} else {
 			arrReservas = this.state.reservas;
 		}
-		return arrReservas.map(res => {
+		return arrReservas
+			.sort(this.compare)
+			.map(res => {
 			const precio = this.calcularPrecio(res);
 			const cancha = this.tipoCancha(res);
 			return (
@@ -97,10 +99,29 @@ class ListReservas extends Component {
 		});
 	}
 
+	compare(a, b) {
+		if(a.Fecha === b.Fecha)
+		{
+			var x = a.Horario, y = b.Horario;
+			
+			return x < y ? -1 : x > y ? 1 : 0;
+		}
+		return a.Fecha - b.Fecha;
+	  }
+
 	tipoCancha(reserva) {
 		switch (reserva.Tamanio) {
 			case 'cancha_5':
 				return 'Cancha 5';
+				break;
+			case 'Cancha de 5':
+				return 'Cancha 5';
+				break;
+			case 'Cancha de 7':
+				return 'Cancha 7';
+				break;
+			case 'Cancha de 9':
+				return 'Cancha 9';
 				break;
 			case 'cancha_7':
 				return 'Cancha 7';
@@ -157,7 +178,7 @@ class ListReservas extends Component {
 		}
 		today = yyyy + '-' + mm + '-' + dd;
 		return array.filter((item) => {
-			return (item.Fecha === today && item.Horario > hour && item.Horario < hour+5);
+			return (item.Fecha === today && item.Horario > hour );
 		});
 	}
 

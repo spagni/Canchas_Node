@@ -9,6 +9,28 @@ function callServer(server){
 	return axios.get(server).then((resp)=>Promise.resolve(resp.data)).catch((err) => console.log(err));
 }
 
+module.exports.getStats = function(req, res) {
+	Reserva.aggregate([
+		{
+			$group: {
+				_id: {
+					nombreCancha: '$nombreCancha',
+					tamanioCancha: '$tamanioCancha',
+					web: '$web'
+				},
+				count: { $sum: 1}
+			}
+		}
+	],
+	function (err, result) {
+        if (err) {
+            next(err);
+        } else {
+            res.json(result);
+        }
+    });
+};
+
 module.exports.getReservas = function(req, res) {
 	Promise.all(constants.serverUri.map(callServer))
 		.then((data) => {
