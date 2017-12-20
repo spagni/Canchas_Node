@@ -9,7 +9,8 @@ class FormBuscarCancha extends Component {
 			fechaDesde: '',
 			fechaHasta: '',
 			horaDesde: '',
-			horaHasta: ''
+			horaHasta: '',
+			disabled: false
 		};
 		this.handleHoraDesde = this.handleHoraDesde.bind(this);
 		this.handleHoraHasta = this.handleHoraHasta.bind(this);
@@ -31,11 +32,27 @@ class FormBuscarCancha extends Component {
 	}
 
 	handleHoraDesde(event) {
-		this.setState({ horaDesde: event.target.value });
+		if ((/\D/.test(event.target.value))) {
+			this.setState({
+				horaDesde: event.target.value,
+				disabled: true
+			});
+		}
+		else {
+			this.setState({ horaDesde: event.target.value, disabled: false });
+		}
 	}
 
 	handleHoraHasta(event) {
-		this.setState({ horaHasta: event.target.value });
+		if ((/\D/.test(event.target.value))) {
+			this.setState({
+				horaHasta: event.target.value,
+				disabled: true 
+			});
+		}
+		else {
+			this.setState({ horaHasta: event.target.value, disabled: false });
+		}
 	}
 
 	handleFechaDesde(event) {
@@ -108,7 +125,7 @@ class FormBuscarCancha extends Component {
 				<Row>
 					<Col s={9} />
 					<Col s={3}>
-						<Button waves="light" onClick={this.handleSubmit}>
+						<Button disabled={this.state.disabled} waves="light" onClick={this.handleSubmit}>
 							Buscar
 						</Button>
 					</Col>
